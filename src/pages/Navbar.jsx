@@ -1,15 +1,6 @@
 import {Link} from "react-router-dom";
-import useAuth from "../hooks/useAuth";
-import toast from "react-hot-toast";
 
 const Navbar = () => {
-  const {user, logOut} = useAuth();
-  console.log(user);
-
-  const handleLogOut = () => {
-    logOut().then(toast.success("User logout successfully!")).catch();
-  };
-
   return (
     <div className="navbar bg-base-100">
       <div className="navbar-start">
@@ -35,9 +26,6 @@ const Navbar = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
               <Link to="/dashboard">Dashboard</Link>
             </li>
           </ul>
@@ -50,20 +38,21 @@ const Navbar = () => {
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
             <Link to="/dashboard">Dashboard</Link>
           </li>
         </ul>
       </div>
       <div className="navbar-end">
-        {user ? (
+        <Link to="/register">
+          <button className="bg-red-500 px-2 py-1 rounded-lg text-white">
+            Register
+          </button>
+        </Link>
+        {/* {user ? (
           <div className="hidden md:flex lg:flex">
             <div id="my-anchor-element-id">
               <img className="size-10 rounded-full mr-2" src={user?.photoURL} />
             </div>
-            <p className="mx-2 p-2 rounded">{user?.displayName}</p>
             <button
               onClick={handleLogOut}
               className="bg-red-500 px-2 py-1 rounded-lg text-white"
@@ -77,7 +66,7 @@ const Navbar = () => {
               Login
             </button>
           </Link>
-        )}
+        )} */}
       </div>
     </div>
   );

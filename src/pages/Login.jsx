@@ -1,13 +1,29 @@
-import {Link} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import ImgLogo from "/logo.jpeg";
+import toast from "react-hot-toast";
+import useAxiosPublic from "../hooks/useAxiosPublic";
 
 const Login = () => {
+  const axiosPublic = useAxiosPublic();
+  const {email} = useParams();
+  const {pin} = useParams();
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
-    const form = e.target;
-    const email = form.email.value;
-    const password = form.password.value;
-    console.log(email, password);
+    const newUser = {
+      email,
+      pin,
+    };
+    try {
+      const {data} = await axiosPublic.post("/login", newUser);
+      console.log(data);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+      toast.error("error.message");
+    }
   };
 
   return (
@@ -43,6 +59,7 @@ const Login = () => {
 
           <input
             type="password"
+            name="pin"
             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
           />
         </div>

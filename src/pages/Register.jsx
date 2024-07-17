@@ -1,14 +1,11 @@
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ImgLogo from "/logo.jpeg";
 import toast from "react-hot-toast";
-// import useAuth from "../hooks/useAuth";
 import useAxiosPublic from "../hooks/useAxiosPublic";
+import bcrypt from "bcryptjs";
 
 const Register = () => {
-  // const {createUser, setLoading} = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  const from = location?.state?.from?.pathname || "/";
   const axiosPublic = useAxiosPublic();
 
   const handleRegister = async (e) => {
@@ -18,26 +15,32 @@ const Register = () => {
     const mobile = form.mobile.value;
     const email = form.email.value;
     const pin = form.pin.value;
-    console.log(name, mobile, email, pin);
+    const role = form.role.value;
+
     try {
-      // setLoading(true);
-      // await createUser(email, password);
+      // Hash the PIN
+      const salt = await bcrypt.genSalt(10);
+      const hashedPin = await bcrypt.hash(pin, salt);
+
       const newUser = {
         name,
         email,
         mobile,
+        pin: hashedPin,
+        role,
         status: "pending",
-        role: "user",
       };
-      const {data} = await axiosPublic.post("/user", newUser);
-      console.log(data);
-      navigate(from, {replace: true});
+
+      const {data} = await axiosPublic.post("/register", newUser);
+
+      navigate("/dashboard");
+
       if (data.insertedId) {
-        toast.success("User create successfully!");
+        toast.success("User created successfully!");
       }
     } catch (error) {
-      console.log(error);
-      toast.error("error.message");
+      console.error(error);
+      toast.error(error.message);
     }
   };
 
@@ -56,7 +59,7 @@ const Register = () => {
             Name
           </label>
           <input
-            type="name"
+            type="text"
             name="name"
             placeholder="Your Name"
             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -77,6 +80,19 @@ const Register = () => {
             className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-lg dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
           />
         </div>
+
+        <label className="form-control w-full max-w-xs">
+          <div className="label">
+            <span className="label-text">Your Role:</span>
+          </div>
+          <select className="select select-bordered" name="role" required>
+            <option disabled selected>
+              Select a Role
+            </option>
+            <option value="user">User</option>
+            <option value="agent">Agent</option>
+          </select>
+        </label>
 
         <div>
           <label
